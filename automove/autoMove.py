@@ -1,11 +1,13 @@
 # Needed imports for the script
 # Using from import statements to hopefully make script faster
-from os import getcwd, makedirs, walk
+from os import getcwd, makedirs, walk, listdir
 from os.path import exists, dirname, isfile, isdir
 from sys import argv, exit
 from subprocess import call
 from datetime import datetime
 from timeit import default_timer
+from hashlib import md5
+from json import dumps
 
 # usage function
 # params: None
@@ -106,9 +108,14 @@ def parseFile(filetypes):
 # returns: Void function
 # Generates an analysis, as well as does the 'heavy lifting' in that it copies everything from origin to destination that matches the extensions in the provided formats argument
 def coreCopyUtil(formats, origin, destination, exclude):
+    jsonWrite = destination + "/pathtoID.json"
+    jsonCount = 0
+    jsonDict = {}
     analysisWrite = destination + "/analysis.txt"
     makedirs(dirname(analysisWrite), exist_ok=True)
+    makedirs(dirname(jsonWrite), exist_ok=True)
     analysis = open(analysisWrite, "w")
+    json = open(jsonWrite, "w")
     analysis.write("Operation performed at " + str(datetime.now()) + "\n")
     analysis.write("Analysis of copy operation performed from %s to %s\n" % (origin, destination))
     analysis.write("Analysis performed on the following filetypes\n")
@@ -118,6 +125,8 @@ def coreCopyUtil(formats, origin, destination, exclude):
     recordSuccess = 0
     recordFailure = 0
     originLen = len(origin)
+    # firstLevel = listdir(origin)
+    # print(firstLevel)
     for (dirpath, dirnames, filenames) in walk(origin):
         if not any(exc in dirpath[originLen:] for exc in exclude['directories']):
             for file in filenames:
@@ -126,6 +135,12 @@ def coreCopyUtil(formats, origin, destination, exclude):
                     if extension in formats:
                         toCopy = dirpath+"/"+file
                         writePath = destination + dirpath[originLen:] + "/" + file
+
+                        hashPath = "/" + dirpath[originLen:] + "/" + file
+                        jsonDict[hashPath] = {}
+                        jsonDict[hashPath]['id'] = hashID = md5(hashPath.encode()).hexdigest()                        
+                        jsonCount += 1
+
                         makedirs(dirname(writePath), exist_ok=True)
                         try:
                             call(['cp',toCopy,writePath])
@@ -137,8 +152,11 @@ def coreCopyUtil(formats, origin, destination, exclude):
         ratio = 1
     else:
         ratio = recordSuccess/recordFailure
-    analysis.write("%f\n" % ratio)
+    analysis.write("Success ratio: %f\n" % ratio)
     analysis.close()
+    jsonDict['count'] = jsonCount
+    json.write(dumps(jsonDict))
+    json.close()
 
 # main Function
 # params: None
