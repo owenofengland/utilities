@@ -31,8 +31,11 @@ This method will copy all filetypes in `filetypes` from the user provided `origi
 * Filetypes argument is a text file with newline separated file extensions, as an example:
 
 .txt
+
 .png
+
 .doc
+
 .pdf
 
 
