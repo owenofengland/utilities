@@ -110,7 +110,6 @@ def parseFile(filetypes):
 def coreCopyUtil(formats, origin, destination, exclude):
     jsonWrite = destination + "/pathtoID.json"
     jsonCount = 0
-    jsonDict = {}
     analysisWrite = destination + "/analysis.txt"
     makedirs(dirname(analysisWrite), exist_ok=True)
     makedirs(dirname(jsonWrite), exist_ok=True)
@@ -125,8 +124,7 @@ def coreCopyUtil(formats, origin, destination, exclude):
     recordSuccess = 0
     recordFailure = 0
     originLen = len(origin)
-    # firstLevel = listdir(origin)
-    # print(firstLevel)
+    jsonDict = {dir:{"count":0, "records":{}} for dir in listdir(origin) if not any(exc in dir for exc in exclude['directories'])}
     for (dirpath, dirnames, filenames) in walk(origin):
         if not any(exc in dirpath[originLen:] for exc in exclude['directories']):
             for file in filenames:
@@ -136,9 +134,11 @@ def coreCopyUtil(formats, origin, destination, exclude):
                         toCopy = dirpath+"/"+file
                         writePath = destination + dirpath[originLen:] + "/" + file
 
+                        levelOneDir = dirpath[originLen:].split("/")[0]
                         hashPath = "/" + dirpath[originLen:] + "/" + file
-                        jsonDict[hashPath] = {}
-                        jsonDict[hashPath]['id'] = hashID = md5(hashPath.encode()).hexdigest()                        
+                        jsonDict[levelOneDir]['records'][hashPath] = {}
+                        jsonDict[levelOneDir]['records'][hashPath]['id'] = md5(hashPath.encode()).hexdigest()
+                        jsonDict[levelOneDir]['count'] += 1                       
                         jsonCount += 1
 
                         makedirs(dirname(writePath), exist_ok=True)
@@ -154,7 +154,7 @@ def coreCopyUtil(formats, origin, destination, exclude):
         ratio = recordSuccess/recordFailure
     analysis.write("Success ratio: %f\n" % ratio)
     analysis.close()
-    jsonDict['count'] = jsonCount
+    jsonDict['total count'] = jsonCount
     json.write(dumps(jsonDict))
     json.close()
 
