@@ -1,4 +1,5 @@
-import os
+from os import getcwd, makedirs, walk
+from os.path import exists, dirname
 from sys import argv, exit
 from subprocess import call
 from datetime import datetime
@@ -15,7 +16,7 @@ def usage():
     print(".txt\n.png\n.jpg\n.mov\n.shp\n")
 
 def validPath(testPath):
-    if os.path.exists(testPath):
+    if exists(testPath):
         return True
     return False
 
@@ -29,7 +30,7 @@ def parseFile(filetypes):
 
 def coreCopyUtil(formats, origin, destination):
     analysisWrite = destination + "/analysis.txt"
-    os.makedirs(os.path.dirname(analysisWrite), exist_ok=True)
+    makedirs(dirname(analysisWrite), exist_ok=True)
     analysis = open(analysisWrite, "w")
     analysis.write("Operation performed at " + str(datetime.now()) + "\n")
     analysis.write("Analysis of copy operation performed from %s to %s\n" % (origin, destination))
@@ -40,13 +41,13 @@ def coreCopyUtil(formats, origin, destination):
     recordSuccess = 0
     recordFailure = 0
     originLen = len(origin)
-    for (dirpath, dirnames, filenames) in os.walk(origin):
+    for (dirpath, dirnames, filenames) in walk(origin):
         for file in filenames:
             extension = '.'+'.'.join(file.split(".")[1:])
             if extension in formats:
                 toCopy = dirpath+"/"+file
                 writePath = destination + dirpath[originLen:] + "/" + file
-                os.makedirs(os.path.dirname(writePath), exist_ok=True)
+                makedirs(dirname(writePath), exist_ok=True)
                 try:
                     call(['cp',toCopy,writePath])
                     recordSuccess += 1
@@ -72,7 +73,7 @@ def main():
         if len(argv) == 4:
             origin, destination, filetypes = argv[1].strip(), argv[2].strip(), argv[3].strip()
         else:
-            origin, destination, filetypes = argv[1].strip(), os.getcwd(), argv[2].strip()
+            origin, destination, filetypes = argv[1].strip(), getcwd(), argv[2].strip()
         if origin[-1] != "/":
             origin = origin + "/"
         if destination[-1] != "/":
