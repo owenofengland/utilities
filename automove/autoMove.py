@@ -1,3 +1,5 @@
+# Needed imports for the script
+# Using from import statements to hopefully make script faster
 from os import getcwd, makedirs, walk
 from os.path import exists, dirname, isfile, isdir
 from sys import argv, exit
@@ -5,6 +7,10 @@ from subprocess import call
 from datetime import datetime
 from timeit import default_timer
 
+# usage function
+# params: None
+# returns: Void function
+# Simple usage print statements, explaining how to properly call the script with arguments
 def usage():
     print("Please use this script as follows with these exact arguments:")
     print("For copying from an origin to a destination other than current directory")
@@ -24,11 +30,17 @@ def usage():
     print("FILES\nhelper.txt\n")
     print("**IMPORTANT NOTE**\nDO NOT LEAVE ANY EMPTY LINES OR TRAILING WHITE SPACE IN THE .txt FILES")
 
+# validPath function
+# params: string, path to be tested
+# returns: boolean, determining whether or not path exists
 def validPath(testPath):
     if exists(testPath):
         return True
     return False
 
+# fourArgExclude function
+# params: strings of arguments three and four when the script is used with four arguments instead of three or five
+# returns: boolean, determining whether or not the four argument execution by user contains an exclude.txt (true) or if it contains a user defined copy destination (false)
 def fourArgExclude(argThree, argFour):
     if isfile(argThree) and isfile(argFour):
         return True
@@ -39,7 +51,9 @@ def fourArgExclude(argThree, argFour):
         print("Please ensure that the last two arguments are:\n1. txt file containing formats and txt file containing files and files/directories to be excluded\n2. directory to copy destination and txt file containing formats\n")
         exit(1)
 
-
+# parseExclude function
+# params: string, path to .txt file containing directories or files or both that should be excluded
+# returns: dictionary of lists containing strings, indicating what should be ignored of what type
 def parseExclude(exclude):
     try:
         with open(exclude, "r") as ft:
@@ -74,6 +88,10 @@ def parseExclude(exclude):
         usage()
         print("Failed to open and extract exclude types from: %s\nPlease ensure the document is a text file and is correctly formatted as indicated by the above example.\n" % (exclude))
 
+# parseFile function
+# params: filetypes, path to .txt file containing desired file types to be copied
+# returns: list of file extensions to be copied
+# Can error out and exit if invalid
 def parseFile(filetypes):
     try:
         with open(filetypes, "r") as ft:
@@ -82,6 +100,11 @@ def parseFile(filetypes):
         usage()
         print("Failed to open and extract format types from: %s\nPlease ensure the document is a text file and is correctly formatted as indicated by the above example.\n" % (filetypes))
 
+# coreCopyUtil function
+# params: formats, the list of strings that are file extensions, returned by above `parseFile` function
+#         origin and destination, strings, that are valid paths
+# returns: Void function
+# Generates an analysis, as well as does the 'heavy lifting' in that it copies everything from origin to destination that matches the extensions in the provided formats argument
 def coreCopyUtil(formats, origin, destination, exclude):
     analysisWrite = destination + "/analysis.txt"
     makedirs(dirname(analysisWrite), exist_ok=True)
@@ -117,6 +140,10 @@ def coreCopyUtil(formats, origin, destination, exclude):
     analysis.write("%f\n" % ratio)
     analysis.close()
 
+# main Function
+# params: None
+# returns: Void function
+# Times the length of operation, and ensures correct usage. Primarily organizes the arguments for the copy utility function.
 def main():
     start = default_timer()
     if len(argv) < 3 :
