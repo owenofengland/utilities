@@ -57,7 +57,7 @@ help.txt
 * You do not have to provide both DIRECTORIES and FILES, if you only would like to ignore directories of certain types, you can just have DIRECTORIES in your ignore.txt
 
 
-* Running this script will copy everything that matches the provided file types to the destination (with exact filenames, extensions, directory naming, etc.) and generate a report of the operation, called `analysis.txt`, as well as information about how long it took to run the operation. It will also generate a JSON containing hash IDs of the relative paths of the files copied.
+* Running this script will copy everything that matches the provided file types to the destination (with exact filenames, extensions, directory naming, etc.) and generate a report of the operation, called `analysis.txt`, as well as information about how long it took to run the operation. It will also generate a JSON containing hash IDs of the relative paths of the files copied, organized in a helpful manner, as well as some additional information.
 
 
 
