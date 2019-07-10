@@ -43,6 +43,7 @@ This method is similar to 2, except it copies to the current directory like meth
 .pdf
 
 * Exclude argument is a text file with newline separated strings of what you would like to not include, as an example:
+
 DIRECTORIES
 
 _scripts
