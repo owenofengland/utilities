@@ -13,7 +13,6 @@ Owen England
 
 
  * For a tutorial on installing anaconda via CLI: https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart
- * For a tutorial on setting up an environment after, and installing OSGEO with GDAL and OGR: https://hackernoon.com/install-python-gdal-using-conda-on-mac-8f320ca36d90
 
 
 ## Using this utility
